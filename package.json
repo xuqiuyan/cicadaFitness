@@ -76,5 +76,8 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "name": "cicadaFitness",
+  "version": "0.0.1",
+  "private": true
 }
