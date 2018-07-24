@@ -130,7 +130,44 @@ export const constantRouterMap = [
     ]
   },
 
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true },
+
+  {
+    path: '/shoplist',
+    component: Layout,
+    name: 'shoplist',
+    meta: {
+      title: 'Shoplist',
+      icon: 'shoplist'
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'shoplist',
+        component: () => import('@/views/shoplist/index'),
+        meta: { title: 'Shoplist' }
+      },
+      // {
+      //   path: 'newOrEdit/:dialogStatus',
+      //   name: 'newOrEdit',
+      //   component: () => import('@/views/shoplist/newOrEdit/index'),
+      //   meta: { title: 'NewOrEdit' }
+      // },
+      {
+        path: 'newOrEdit',
+        name: 'newOrEdit',
+        component: () => import('@/views/shoplist/newOrEdit/index'),
+        meta: { title: 'NewOrEdit' }
+      },
+      {
+        path: 'detail',
+        name: 'detail',
+        component: () => import('@/views/shoplist/detail/index'),
+        meta: { title: 'Detail' },
+        hidden: true
+      }
+    ]
+  }
 ]
 
 export default new Router({
