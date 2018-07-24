@@ -77,10 +77,11 @@ export default {
       }, (err, data) => {
         if (data) {
           this.imgUrl = 'https://' + data.Location
-          // if ( e.target.UploadImgs ) {
-          // }
-          Bus.$emit('uploadImgSuccess', this.imgUrl)
-
+          if (this.fathername === 'uploadImgs') {
+            Bus.$emit('uploadImgSuccess', this.imgUrl)
+          } else if (this.fathername === 'newOrEdit') {
+            Bus.$emit('uploadHeadSuccess', this.imgUrl)
+          }
           this.$message.success('上传成功！')
         } else {
           this.msg = err
@@ -116,6 +117,9 @@ export default {
     uploadFun() {
       this.file && this.uploadFile()
     }
+  },
+  props: {
+    fathername: String
   }
 }
 

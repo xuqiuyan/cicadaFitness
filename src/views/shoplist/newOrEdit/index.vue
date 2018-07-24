@@ -25,7 +25,7 @@
         </el-form-item>
         <el-form-item :label="tableOptions[8]" prop="photos">
           <div style="width:148px;height:148px;" :style="{backgroundImage: 'url(' + temp.coverUrl + ')'}">
-            <upload-img></upload-img>
+            <upload-img :fathername="fathername"></upload-img>
           </div>
           <p>{{msg}}</p>          
         </el-form-item>
@@ -37,18 +37,11 @@
           </el-input>
         </el-form-item>      
       </el-form>
-      <div slot="footer" class="dialog-footer" style="margin-left:80px;">
+      <div slot="footer" class="dialog-footer" style="margin-left:130px;">
         <el-button v-if="shopid==''" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
-      <el-dialog title="请选择地址" :visible.sync="dialogFormVisible" >
-        <t-map ref="tMap"></t-map>
-        <div slot="footer" class="dialog-footer">
-          <el-button  type="primary" @click="cancleMap">{{$t('table.cancel')}}</el-button>
-          <el-button  type="primary" @click="returnMap">{{$t('table.confirm')}}</el-button>
-        </div>
-      </el-dialog>
-      
+      <t-map></t-map>
   </div>
 
 </template>
@@ -75,7 +68,7 @@ export default {
   components: { UploadImg, UploadImgs, TMap },
   data() {
     return {
-      dialogFormVisible: false,
+      fathername: 'newOrEdit',
       imgHead: '',
       msg: '只能上传jpg/png文件，且不超过500kb',
       tableOptions: ['名称', '地址', '所在区域', '店长', '简介', '操房数量', '总面积', '私教面积', '店铺封面', '店铺照片', '开店时间', '操作'],
@@ -103,7 +96,7 @@ export default {
         personalArea: [{ type: 'number', required: true, message: '请填写私教面积', trigger: 'change' }],
         coverUrl: [{ required: true, message: '请上传店铺封面', trigger: 'change' }],
         photos: [{ required: true, message: '请上传店铺照片', trigger: 'change' }],
-        openDate: [{ type: 'date', required: true, message: '请填写开店时间', trigger: 'change' }],
+        openDate: [{ type: 'string', required: true, message: '请填写开店时间', trigger: 'change' }],
         name: [{ required: true, message: '请输入店名', trigger: 'blur' }],
         manager: [{ required: true, message: '请输入店长', trigger: 'blur' }]
       },
@@ -117,9 +110,17 @@ export default {
   },
   created() {
     this.isCreate()
-    Bus.$on('uploadImgSuccess', msg => {
+    Bus.$on('uploadHeadSuccess', msg => {
       this.temp.coverUrl = msg
-      console.log(msg)
+    })
+    Bus.$on('setPhotosUrl', msg => {
+      this.temp.photos = msg
+      console.log(this.temp.photos)
+    })
+    Bus.$on('selectMap', msg => {
+      this.temp.address = msg.address
+      this.temp.longitude = msg.longitude
+      this.temp.latitude = msg.latitude
     })
   },
   methods: {
@@ -134,8 +135,6 @@ export default {
     getShop() {
       fetchShop(this.shopid).then(response => {
         this.temp = Object.assign({}, response.data.data)
-        this.temp.photos = [this.temp.coverUrl, this.temp.coverUrl]
-        // this.imgList = JSON.stringify(this.temp.photos)
         Bus.$emit('getCoverUrl', this.temp.coverUrl)
         Bus.$emit('getPhotosUrl', this.temp.photos)
         this.listLoading = false
@@ -163,16 +162,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         console.log('updateData')
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateShop(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
+          updateShop(this.temp).then(() => {
             this.$notify({
               title: '成功',
               message: '更新成功',
@@ -184,16 +174,7 @@ export default {
       })
     },
     getMap() {
-      this.dialogFormVisible = true
-    },
-    cancleMap() {
-      console.log('cancleMap')
-    },
-    returnMap() {
-      this.dialogFormVisible = false
-      var tmp = this.$refs.tMap
-      this.temp.address = tmp.address
-      this.temp.latLng = tmp.latLng
+      Bus.$emit('isShowMap', true)
     }
   }
 }
