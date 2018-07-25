@@ -11,21 +11,24 @@
           <el-date-picker v-model="temp.openDate" type="date" placeholder="请选择开店时间">
           </el-date-picker>          
         </el-form-item>  
+        <el-form-item :label="tableOptions[2]" prop="region">
+          <el-input v-model="temp.region"></el-input>
+        </el-form-item>
         <el-form-item :label="tableOptions[1]" prop="address">
           <el-input v-model="temp.address" @focus="getMap"></el-input>
         </el-form-item>  
         <el-form-item :label="tableOptions[5]" prop="classrooms">
-          <el-input v-model="temp.classrooms"><template slot="append">个</template></el-input>
+          <el-input v-model.number="temp.classrooms" type="number"><template slot="append">个</template></el-input>
         </el-form-item>
         <el-form-item :label="tableOptions[6]" prop="totalArea">
-          <el-input v-model="temp.totalArea"><template slot="append">㎡</template></el-input>
+          <el-input v-model.number="temp.totalArea" type="number"><template slot="append">㎡</template></el-input>
         </el-form-item>
         <el-form-item :label="tableOptions[7]" prop="personalArea">
-          <el-input v-model="temp.personalArea"><template slot="append">㎡</template></el-input>
+          <el-input v-model.number="temp.personalArea" type="number"><template slot="append">㎡</template></el-input>
         </el-form-item>
         <el-form-item :label="tableOptions[8]" prop="photos">
           <div style="width:148px;height:148px;" :style="{backgroundImage: 'url(' + temp.coverUrl + ')'}">
-            <upload-img :fathername="fathername"></upload-img>
+            <upload-img :imgfoulder="imgfoulder"></upload-img>
           </div>
           <p>{{msg}}</p>          
         </el-form-item>
@@ -38,7 +41,7 @@
         </el-form-item>      
       </el-form>
       <div slot="footer" class="dialog-footer" style="margin-left:130px;">
-        <el-button v-if="shopid==''" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="shopid==undefined" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
       <t-map></t-map>
@@ -68,7 +71,7 @@ export default {
   components: { UploadImg, UploadImgs, TMap },
   data() {
     return {
-      fathername: 'newOrEdit',
+      imgfoulder: 'covers',
       imgHead: '',
       msg: '只能上传jpg/png文件，且不超过500kb',
       tableOptions: ['名称', '地址', '所在区域', '店长', '简介', '操房数量', '总面积', '私教面积', '店铺封面', '店铺照片', '开店时间', '操作'],
@@ -81,24 +84,34 @@ export default {
         address: '',
         manager: '',
         introduction: '',
-        classrooms: '',
-        totalArea: '',
-        personalArea: '',
+        classrooms: 0,
+        totalArea: 0,
+        personalArea: 0,
         coverUrl: '',
         photos: [],
-        openDate: ''
+        openDate: new Date()
       },
       rules: {
-        address: [{ required: true, message: '请选择店铺地址', trigger: 'blur' }],
+        address: [{ required: true, message: '请选择店铺地址' }],
         introduction: [{ required: true, message: '请输入店铺简介', trigger: 'blur' }],
-        classrooms: [{ type: 'number', required: true, message: '请输入操房数量', trigger: 'change' }],
-        totalArea: [{ type: 'number', required: true, message: '请填写店铺总面积', trigger: 'change' }],
-        personalArea: [{ type: 'number', required: true, message: '请填写私教面积', trigger: 'change' }],
+        classrooms: [
+          { required: true, message: '请输入操房数量', trigger: 'blur' },
+          { type: 'number', message: '请输入数字', trigger: 'blur' }
+        ],
+        totalArea: [
+          { required: true, message: '请填写店铺总面积', trigger: 'blur' },
+          { type: 'number', message: '请输入数字', trigger: 'blur' }
+        ],
+        personalArea: [
+          { required: true, message: '请填写私教面积', trigger: 'blur' },
+          { type: 'number', message: '请输入数字', trigger: 'blur' }
+        ],
         coverUrl: [{ required: true, message: '请上传店铺封面', trigger: 'change' }],
         photos: [{ required: true, message: '请上传店铺照片', trigger: 'change' }],
-        openDate: [{ type: 'string', required: true, message: '请填写开店时间', trigger: 'change' }],
+        openDate: [{ required: true, message: '请填写开店时间' }],
         name: [{ required: true, message: '请输入店名', trigger: 'blur' }],
-        manager: [{ required: true, message: '请输入店长', trigger: 'blur' }]
+        manager: [{ required: true, message: '请输入店长', trigger: 'blur' }],
+        region: [{ required: true, message: '请输入所在区域', trigger: 'blur' }]
       },
       shopid: this.$route.query.shopid
     }
@@ -115,7 +128,6 @@ export default {
     })
     Bus.$on('setPhotosUrl', msg => {
       this.temp.photos = msg
-      console.log(this.temp.photos)
     })
     Bus.$on('selectMap', msg => {
       this.temp.address = msg.address
@@ -128,6 +140,7 @@ export default {
       this.$message('submit!')
     },
     isCreate() {
+      console.log(this.shopid)
       if (this.shopid) {
         this.getShop()
       }
@@ -141,11 +154,9 @@ export default {
       })
     },
     createData() {
+      console.log('createData')
       this.$refs['dataForm'].validate((valid) => {
-        console.log('createData')
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
           createShop(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.$notify({
@@ -159,8 +170,8 @@ export default {
       })
     },
     updateData() {
+      console.log('updateData')
       this.$refs['dataForm'].validate((valid) => {
-        console.log('updateData')
         if (valid) {
           updateShop(this.temp).then(() => {
             this.$notify({

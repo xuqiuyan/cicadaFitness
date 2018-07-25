@@ -28,3 +28,10 @@ export function updateShop(data) {
     data
   })
 }
+
+export default function getImgName() {
+  return request({
+    url: '/newid',
+    method: 'get'
+  })
+}

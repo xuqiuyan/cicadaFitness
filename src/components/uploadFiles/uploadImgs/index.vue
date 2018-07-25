@@ -7,7 +7,7 @@
           </div>          
         </li>
     </ul>
-    <upload-img :fathername="fathername"></upload-img>
+    <upload-img :imgfoulder="imgfoulder"></upload-img>
   </div>
 </template>
 <style>
@@ -31,7 +31,8 @@
     vertical-align: top;
     background-size: contain;
     background-position: center;
-    text-align: center;
+    text-align: center;    
+    background-repeat: none;
   }
   #photosList li .delete{
     background:rgba(255, 255, 255, 0.9);
@@ -62,7 +63,7 @@ export default {
   components: { UploadImg },
   data() {
     return {
-      fathername: 'uploadImgs',
+      imgfoulder: 'photos',
       options: {
         Bucket: 'static-1257000451',
         Region: 'ap-shanghai'

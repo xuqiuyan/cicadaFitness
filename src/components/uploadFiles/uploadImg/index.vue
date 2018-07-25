@@ -21,6 +21,7 @@
     vertical-align: top;
     background-size: contain;
     background-position: center;
+    background-repeat: none;
   }
   #uploadImgBlock input{
     position: absolute;
@@ -36,7 +37,7 @@
 import Bus from '@/api/bus'
 import COS from 'cos-js-sdk-v5'
 import getAuth from '@/api/getAuth'
-
+import getImgName from '@/api/shop'
 export default {
   name: 'UploadImg',
   data() {
@@ -68,24 +69,32 @@ export default {
   },
   methods: {
     uploadFile() {
-      var Key = 'shopDir/' + this.file.name
-      this.cos.sliceUploadFile({
-        Bucket: this.options.Bucket,
-        Region: this.options.Region,
-        Key: Key,
-        Body: this.file
-      }, (err, data) => {
-        if (data) {
-          this.imgUrl = 'https://' + data.Location
-          if (this.fathername === 'uploadImgs') {
-            Bus.$emit('uploadImgSuccess', this.imgUrl)
-          } else if (this.fathername === 'newOrEdit') {
-            Bus.$emit('uploadHeadSuccess', this.imgUrl)
-          }
-          this.$message.success('上传成功！')
+      getImgName().then(response => {
+        var type = ''
+        if (this.file.type === 'image/jpeg') {
+          type = '.jpg'
         } else {
-          this.msg = err
+          type = '.png'
         }
+        var Key = this.imgfoulder + '/' + response.data.data + type
+        this.cos.sliceUploadFile({
+          Bucket: this.options.Bucket,
+          Region: this.options.Region,
+          Key: Key,
+          Body: this.file
+        }, (err, data) => {
+          if (data) {
+            this.imgUrl = 'https://' + data.Location
+            if (this.imgfoulder === 'photos') {
+              Bus.$emit('uploadImgSuccess', this.imgUrl)
+            } else if (this.imgfoulder === 'covers') {
+              Bus.$emit('uploadHeadSuccess', this.imgUrl)
+            }
+            // this.$message.success('上传成功！')
+          } else {
+            this.msg = err
+          }
+        })
       })
     },
     selectImg(e) {
@@ -119,7 +128,7 @@ export default {
     }
   },
   props: {
-    fathername: String
+    imgfoulder: String
   }
 }
 

@@ -133,7 +133,6 @@ export default {
           this.latLng = result.detail.nearPois[0].latLng
           this.address = result.detail.nearPois[0].address + result.detail.nearPois[0].name
         }
-        console.log(this.latLng)
         map.setCenter(this.latLng)// 设置地图中心
         marker.setPosition(this.latLng)// 设置标注
         latlngBounds.extend(this.latLng)// 设置视图
