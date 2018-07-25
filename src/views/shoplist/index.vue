@@ -214,7 +214,7 @@ export default {
       //   this.$refs['dataForm'].clearValidate()
       // })
       // <router-link to="/shoplist/newOrEdit">新增</router-link>
-      this.$router.push({ path: '/shoplist/newOrEdit', query: { shopid: '' }})
+      this.$router.push({ path: '/shoplist/newOrEdit' })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj

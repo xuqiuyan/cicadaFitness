@@ -18,7 +18,10 @@ import '@/icons' // icon
 import '@/permission' // permission control
 
 import * as filters from './filters' // global filters
+import moment from 'moment'
+import VueMomentJS from 'vue-momentjs'
 
+Vue.use(VueMomentJS, moment)
 Vue.use(ElementUI, {
   size: 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
@@ -36,3 +39,4 @@ new Vue({
   i18n,
   render: h => h(App)
 })
+

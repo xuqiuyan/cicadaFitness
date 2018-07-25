@@ -8,7 +8,7 @@
           <el-input v-model="temp.manager"></el-input>
         </el-form-item>
         <el-form-item :label="tableOptions[10]" prop="openDate">
-          <el-date-picker v-model="temp.openDate" type="date" placeholder="请选择开店时间">
+          <el-date-picker v-model="temp.openDate" format="yyyy-MM-dd" @change="getSTime" type="date" placeholder="请选择开店时间">
           </el-date-picker>          
         </el-form-item>  
         <el-form-item :label="tableOptions[2]" prop="region">
@@ -140,7 +140,6 @@ export default {
       this.$message('submit!')
     },
     isCreate() {
-      console.log(this.shopid)
       if (this.shopid) {
         this.getShop()
       }
@@ -154,7 +153,6 @@ export default {
       })
     },
     createData() {
-      console.log('createData')
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           createShop(this.temp).then(() => {
@@ -170,7 +168,6 @@ export default {
       })
     },
     updateData() {
-      console.log('updateData')
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           updateShop(this.temp).then(() => {
@@ -186,6 +183,9 @@ export default {
     },
     getMap() {
       Bus.$emit('isShowMap', true)
+    },
+    getSTime(val) {
+      this.temp.openDate = this.$moment(val).format('YYYY-MM-DD')
     }
   }
 }
