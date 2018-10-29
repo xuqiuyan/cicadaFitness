@@ -1,7 +1,7 @@
 <template>
   <div v-if="!item.hidden&&item.children" class="menu-wrapper">
 
-      <router-link v-if=" hasOneShowingChildren(item.children) &&!item.alwaysShow" :to="resolvePath(item.children[0].path)">
+      <router-link v-if="hasOneShowingChildren(item.children) && !item.children[0].children&&!item.alwaysShow" :to="resolvePath(item.children[0].path)">
         <el-menu-item :index="resolvePath(item.children[0].path)" :class="{'submenu-title-noDropdown':!isNest}">
           <svg-icon v-if="item.children[0].meta&&item.children[0].meta.icon" :icon-class="item.children[0].meta.icon"></svg-icon>
           <span v-if="item.children[0].meta&&item.children[0].meta.title" slot="title">{{item.children[0].meta.title}}</span>
@@ -51,6 +51,7 @@ export default {
   },
   methods: {
     hasOneShowingChildren(children) {
+      console.log(this.item)
       const showingChildren = children.filter(item => {
         return !item.hidden
       })
@@ -66,6 +67,7 @@ export default {
       if (showingChildren.length === 0) {
         return true
       }
+      console.log(showingChildren.length)
       return false
     },
     resolvePath(...paths) {

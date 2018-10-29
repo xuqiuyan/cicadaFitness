@@ -63,7 +63,6 @@ export default {
   components: { UploadImg },
   data() {
     return {
-      imgfoulder: 'photos',
       options: {
         Bucket: 'static-1257000451',
         Region: 'ap-shanghai'
@@ -83,12 +82,20 @@ export default {
       this.photos.push(msg)
       Bus.$emit('setPhotosUrl', this.photos)
     })
+    Bus.$on('facilities/photos', msg => {
+      // 上传图片完成
+      this.photos.push(msg)
+      Bus.$emit('facilities/photos-imgs', this.photos)
+    })
   },
   methods: {
     deleteImg(i) {
       this.photos.splice(i, 1)
       Bus.$emit('setPhotosUrl', this.photos)
     }
+  },
+  props: {
+    imgfoulder: String
   }
 }
 

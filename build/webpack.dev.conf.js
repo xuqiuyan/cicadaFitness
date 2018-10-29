@@ -56,7 +56,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       inject: true,
       favicon: resolve('favicon.ico'),
       title: 'vue-element-admin'
-    }),
+    })
   ]
 })
 

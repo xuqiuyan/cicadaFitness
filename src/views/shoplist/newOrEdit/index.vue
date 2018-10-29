@@ -27,13 +27,13 @@
           <el-input v-model.number="temp.personalArea" type="number"><template slot="append">㎡</template></el-input>
         </el-form-item>
         <el-form-item :label="tableOptions[8]" prop="photos">
-          <div style="width:148px;height:148px;" :style="{backgroundImage: 'url(' + temp.coverUrl + ')'}">
-            <upload-img :imgfoulder="imgfoulder"></upload-img>
+          <div class="imgblock" :style="{backgroundImage: 'url(' + temp.coverUrl + ')'}">
+            <upload-img :imgfoulder="'shop/covers'"></upload-img>
           </div>
           <p>{{msg}}</p>          
         </el-form-item>
         <el-form-item :label="tableOptions[9]" prop="photos">
-          <upload-imgs></upload-imgs>
+          <upload-imgs :imgfoulder="'shop/photos'"></upload-imgs>
         </el-form-item>        
         <el-form-item :label="tableOptions[4]" prop="introduction">
           <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入店铺简介" v-model="temp.introduction">
@@ -71,7 +71,6 @@ export default {
   components: { UploadImg, UploadImgs, TMap },
   data() {
     return {
-      imgfoulder: 'covers',
       imgHead: '',
       msg: '只能上传jpg/png文件，且不超过500kb',
       tableOptions: ['名称', '地址', '所在区域', '店长', '简介', '操房数量', '总面积', '私教面积', '店铺封面', '店铺照片', '开店时间', '操作'],
@@ -194,6 +193,15 @@ export default {
 <style scoped>
 .line{
   text-align: center;
+}
+.imgblock{
+  width: 148px;
+  height: 148px;
+  line-height: 146px;
+  vertical-align: top;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 </style>
 

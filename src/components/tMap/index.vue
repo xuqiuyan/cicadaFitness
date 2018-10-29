@@ -104,51 +104,58 @@ export default {
         zoom: 11
       })
       // 标注
-      var marker = new qq.maps.Marker({ position: new qq.maps.LatLng(29.101, 119.6947), map: map })
-      // 地址解析
-      const geocoder = new qq.maps.Geocoder()
-      // 标注信息框
-      const info = new qq.maps.InfoWindow({ map: map })
-      // 视图调整
-      const latlngBounds = new qq.maps.LatLngBounds()
-      var ap = new qq.maps.place.Autocomplete(document.getElementById('searchInput'))
+      var markers = []
+      var ap = new qq.maps.place.Autocomplete(document.getElementById('searchInput'), { location: '金华市' })
       // 调用Poi检索类。用于进行本地检索、周边检索等服务。
-      // var searchService = new qq.maps.SearchService({ map: map })
+      var searchService = new qq.maps.SearchService({
+        // 检索成功的回调函数
+        complete: results => {
+          // 设置回调函数参数
+          var pois = results.detail.pois
+          const info = new qq.maps.InfoWindow({ map: map })
+          var latlngBounds = new qq.maps.LatLngBounds()
+          for (var i = 0, l = pois.length; i < l; i++) {
+            var poi = pois[i]
+            // 扩展边界范围，用来包含搜索到的Poi点
+            latlngBounds.extend(poi.latLng)
+            var marker = new qq.maps.Marker({
+              map: map,
+              position: poi.latLng
+            })
+
+            marker.setTitle(i + 1)
+            markers.push(marker)
+            qq.maps.event.addListener(marker, 'click', () => {
+              info.open()
+              info.setContent('<div style="width:280px;height:100px;">' + '<p style="font-size:14px;">名称：' + poi.name + '</p><p style="font-size:14px;">地址：' + poi.address + '</p></div>')
+              info.setPosition(poi.latLng)
+              this.latLng = poi.latLng
+              this.address = poi.address
+            })
+          }
+          // 调整地图视野
+          map.fitBounds(latlngBounds)
+        },
+        // 若服务请求失败，则运行以下函数
+        error: function() {
+          console.log('出错了。')
+        }
+      })
+      var clearOverlays = function(overlays) {
+        let overlay = overlays.pop()
+        while (overlay) {
+          overlay.setMap(null)
+          overlay = overlays.pop()
+        }
+      }
       // 联想菜单添加监听事件
       qq.maps.event.addListener(ap, 'confirm', function(res) {
-        const all = this.place.address + this.place.name
-        geocoder.getLocation(all)
-      })
-      // 添加监听事件  获取鼠标点击事件
-      qq.maps.event.addListener(map, 'click', function(event) {
-        // // 地址和经纬度之间进行转换服务
-        geocoder.getAddress(event.latLng)
-      })
-      // 设置服务请求成功的回调函数
-      geocoder.setComplete(result => {
-        if (result.detail.gps_type) {
-          this.latLng = result.detail.location
-          this.address = result.detail.address
-        } else {
-          this.latLng = result.detail.nearPois[0].latLng
-          this.address = result.detail.nearPois[0].address + result.detail.nearPois[0].name
-        }
-        map.setCenter(this.latLng)// 设置地图中心
-        marker.setPosition(this.latLng)// 设置标注
-        latlngBounds.extend(this.latLng)// 设置视图
-        map.fitBounds(latlngBounds)// 调整视图
-        // 点击Marker会弹出反查结果
-        info.open()
-        info.setContent('<div>' + this.address + '</div>')
-        info.setPosition(this.latLng)
-      })
-      // 若服务请求失败，则运行以下函数
-      geocoder.setError(function() {
-        console.log('出错了，请输入正确的地址！！！')
+        clearOverlays(markers)
+        const all = this.place.address + '-' + this.place.name
+        searchService.search(all)
       })
     },
     cancleMap() {
-      console.log('cancleMap')
       this.dialogFormVisible = false
     },
     returnMap() {

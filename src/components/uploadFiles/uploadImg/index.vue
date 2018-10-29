@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <div id="uploadImgBlock" align="center">
-      <el-button type="primary" size="small">点击上传</el-button>
-      <input type="file" @change="selectImg" ref="imgfile">
-    </div>
+  <div class="uploadImgBlock" align="center">
+    <el-button type="primary" size="small">点击上传</el-button>
+    <input type="file" @change="selectImg" ref="imgfile">
   </div>
 </template>
 <style>
-  #uploadImgBlock{
+  .uploadImgBlock{
     position: relative;
     display: inline-block;
     background-color: rgba(248, 254, 255, 0.2);
@@ -23,7 +21,7 @@
     background-position: center;
     background-repeat: none;
   }
-  #uploadImgBlock input{
+  .uploadImgBlock input{
     position: absolute;
     top: 0;
     left: 0;
@@ -36,8 +34,7 @@
 <script>
 import Bus from '@/api/bus'
 import COS from 'cos-js-sdk-v5'
-import getAuth from '@/api/getAuth'
-import getImgName from '@/api/shop'
+import { getAuthImg, getImgName } from '@/api/getAuth'
 export default {
   name: 'UploadImg',
   data() {
@@ -54,7 +51,7 @@ export default {
   created() {
     this.cos = new COS({
       getAuthorization: function(options, callback) {
-        getAuth().then(response => {
+        getAuthImg().then(response => {
           callback({
             Authorization: response.data.data
           })
@@ -85,10 +82,16 @@ export default {
         }, (err, data) => {
           if (data) {
             this.imgUrl = 'https://' + data.Location
-            if (this.imgfoulder === 'photos') {
+            if (this.imgfoulder === 'shop/photos') {
               Bus.$emit('uploadImgSuccess', this.imgUrl)
-            } else if (this.imgfoulder === 'covers') {
+            } else if (this.imgfoulder === 'shop/covers') {
               Bus.$emit('uploadHeadSuccess', this.imgUrl)
+            } else if (this.imgfoulder === 'facilities/types/logo') {
+              Bus.$emit('uploadLogoSuccess', this.imgUrl)
+            } else if (this.imgfoulder === 'facilities/covers') {
+              Bus.$emit('facilities/covers', this.imgUrl)
+            } else if (this.imgfoulder === 'facilities/photos') {
+              Bus.$emit('facilities/photos', this.imgUrl)
             }
             // this.$message.success('上传成功！')
           } else {

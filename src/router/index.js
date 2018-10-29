@@ -71,73 +71,12 @@ export const constantRouterMap = [
       }
     ]
   },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'nested',
-    meta: {
-      title: 'nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'menu1',
-        meta: { title: 'menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'menu1-1',
-            meta: { title: 'menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'menu1-2',
-            meta: { title: 'menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'menu1-2-1',
-                meta: { title: 'menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'menu1-2-2',
-                meta: { title: 'menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'menu1-3',
-            meta: { title: 'menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  // { path: '*', redirect: '/404', hidden: true },
-
   {
     path: '/shoplist',
     component: Layout,
-    name: 'shoplist',
+    name: 'shopList',
     meta: {
-      title: 'Shoplist',
+      title: '店铺管理',
       icon: 'shoplist'
     },
     children: [
@@ -145,25 +84,67 @@ export const constantRouterMap = [
         path: 'index',
         name: 'shoplist',
         component: () => import('@/views/shoplist/index'),
-        meta: { title: 'Shoplist' }
+        meta: { title: '店铺列表' }
       },
-      // {
-      //   path: 'newOrEdit/:dialogStatus',
-      //   name: 'newOrEdit',
-      //   component: () => import('@/views/shoplist/newOrEdit/index'),
-      //   meta: { title: 'NewOrEdit' }
-      // },
       {
         path: 'newOrEdit',
-        name: 'newOrEdit',
+        name: 'shopNewOrEdit',
         component: () => import('@/views/shoplist/newOrEdit/index'),
-        meta: { title: 'NewOrEdit' }
+        meta: { title: '新增/编辑' }
       },
       {
         path: 'detail',
-        name: 'detail',
+        name: 'shopDetail',
         component: () => import('@/views/shoplist/detail/index'),
-        meta: { title: 'Detail' },
+        meta: { title: '详情' },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/facilities',
+    component: Layout,
+    name: 'facilities',
+    children: [
+      {
+        path: 'index',
+        name: 'typeList',
+        component: () => import('@/views/facilities/typeList/index'),
+        meta: { title: '器械管理', icon: 'facilities' }
+      },
+      {
+        path: 'typeList/newOrEdit',
+        name: 'facTypeNewOrEdit',
+        component: () => import('@/views/facilities/typeList/newOrEdit/index'),
+        meta: { title: '新增/编辑' },
+        hidden: true
+      },
+      {
+        path: 'typeList/detail',
+        name: 'facTypeDetail',
+        component: () => import('@/views/facilities/typeList/detail/index'),
+        meta: { title: '详情' },
+        hidden: true
+      },
+      {
+        path: 'modelList',
+        name: 'facModelList',
+        component: () => import('@/views/facilities/modelList/index'),
+        meta: { title: '型号列表' },
+        hidden: true
+      },
+      {
+        path: 'modelList/newOrEdit',
+        name: 'facModelNewOrEdit',
+        component: () => import('@/views/facilities/modelList/newOrEdit/index'),
+        meta: { title: '新增/编辑' },
+        hidden: true
+      },
+      {
+        path: 'modelList/detail',
+        name: 'facModelDetail',
+        component: () => import('@/views/facilities/modelList/detail/index'),
+        meta: { title: '详情' },
         hidden: true
       }
     ]

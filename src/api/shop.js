@@ -29,9 +29,9 @@ export function updateShop(data) {
   })
 }
 
-export default function getImgName() {
+export function deleteShop(id) {
   return request({
-    url: '/newid',
-    method: 'get'
+    url: '/shops/' + id,
+    method: 'delete'
   })
 }
